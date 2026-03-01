@@ -18,45 +18,45 @@ DEFAULT_PRECISION :: 5
 DEFAULT_ARC_TOLERANCE :: 0.25
 DEFAULT_MITER_LIMIT :: 2
 
-offset_polygon_f64 :: proc(polygon: [][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE) -> [][][2]f64 {
+offset_polygon_f64 :: proc(polygon: [][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]f64 {
 
 	encoded: []f64 = marshal_pathd(polygon)
 	defer delete(encoded)
 
-    offset_paths := InflatePathD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, false)
+    offset_paths := InflatePathD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArrayD(&offset_paths)
 
 	return unmarshal_pathsd(offset_paths)
 }
 
-offset_polygons_f64 :: proc(polygons: [][][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE) -> [][][2]f64 {
+offset_polygons_f64 :: proc(polygons: [][][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]f64 {
 
 	encoded: []f64 = marshal_pathsd(polygons)
 	defer delete(encoded)
 
-    offset_paths := InflatePathsD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, false)
+    offset_paths := InflatePathsD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArrayD(&offset_paths)
 
 	return unmarshal_pathsd(offset_paths)
 }
 
-offset_polygon_i64 :: proc(polygon: [][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE) -> [][][2]i64 {
+offset_polygon_i64 :: proc(polygon: [][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]i64 {
 
 	encoded: []i64 = marshal_path64(polygon)
 	defer delete(encoded)
 
-    offset_paths := InflatePath64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, false)
+    offset_paths := InflatePath64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArray64(&offset_paths)
 
 	return unmarshal_paths64(offset_paths)
 }
 
-offset_polygons_i64 :: proc(polygons: [][][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE) -> [][][2]i64 {
+offset_polygons_i64 :: proc(polygons: [][][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]i64 {
 
 	encoded: []i64 = marshal_paths64(polygons)
 	defer delete(encoded)
 
-    offset_paths := InflatePaths64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, false)
+    offset_paths := InflatePaths64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArray64(&offset_paths)
 
 	return unmarshal_paths64(offset_paths)

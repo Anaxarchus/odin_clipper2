@@ -136,9 +136,9 @@ JoinType :: enum { Square, Bevel, Round, Miter }
 EndType :: enum {Polygon, Joined, Butt, Square, Round}
 
 ClipType :: enum  { NoClip, Intersection, Union, Difference, Xor }
+FillRule :: enum { EvenOdd, NonZero, Positive, Negative }
 PathType ::	enum { Subject, Clip }
 JoinWith ::	enum { NoJoin, Left, Right }
-FillRule :: enum { EvenOdd, NonZero, Positive, Negative }
 
 Recti64 :: struct {
     left, top, right, bottom: i64,
