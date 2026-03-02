@@ -1,5 +1,7 @@
 package test
 
+// These tests are not to test to correctness of Clipper2's results, they are only to validate that the marshalling functions are working properly.
+
 import "core:testing"
 import "core:fmt"
 import cl ".."
