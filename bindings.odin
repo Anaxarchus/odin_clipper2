@@ -270,16 +270,16 @@ foreign lib {
     ) -> CPathsD ---
 
     @(private="package")
-    RectClip64 :: proc(rect: CRecti64, paths: CPaths64) -> CPaths64 ---
+    RectClip64 :: proc(rect: ^CRecti64, paths: CPaths64) -> CPaths64 ---
 
     @(private="package")
-    RectClipD :: proc(rect: CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
+    RectClipD :: proc(rect: ^CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
 
     @(private="package")
-    RectClipLines64 :: proc(rect: CRecti64, paths: CPaths64) -> CPaths64 ---
+    RectClipLines64 :: proc(rect: ^CRecti64, paths: CPaths64) -> CPaths64 ---
 
     @(private="package")
-    RectClipLinesD :: proc(rect: CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
+    RectClipLinesD :: proc(rect: ^CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
 
     @(private="package")
     Triangulate64 :: proc( paths: CPaths64, use_delaunay: bool) -> CPaths64 ---

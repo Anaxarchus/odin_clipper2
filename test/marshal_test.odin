@@ -6,6 +6,7 @@ import "core:testing"
 import "core:fmt"
 import cl ".."
 
+
 @(test)
 test_all :: proc(t: ^testing.T) {
     test_marshal_i64(t)
@@ -14,6 +15,128 @@ test_all :: proc(t: ^testing.T) {
     test_marshal_offset_f64(t)
     test_marshal_difference_hole_i64(t)
     test_marshal_union_two_rects_i64(t)
+    test_rect_clip_i64(t)
+    test_rect_clip_f64(t)
+    test_rect_clip_lines_i64(t)
+    test_rect_clip_lines_f64(t)
+}
+
+@(test)
+test_rect_clip_i64 :: proc(t: ^testing.T) {
+    // Large rectangle partially overlapping the clip rect — clipped result should be the intersection
+    paths := [][][2]i64{ {{-500, -500}, {-500, 500}, {500, 500}, {500, -500}} }
+    rect  := cl.Recti64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 1)
+    if len(solution) > 0 {
+        testing.expect_value(t, len(solution[0]), 4)
+    }
+}
+
+@(test)
+test_rect_clip_f64 :: proc(t: ^testing.T) {
+    paths := [][][2]f64{ {{-500, -500}, {-500, 500}, {500, 500}, {500, -500}} }
+    rect  := cl.Rectf64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 1)
+    if len(solution) > 0 {
+        testing.expect_value(t, len(solution[0]), 4)
+    }
+}
+
+@(test)
+test_rect_clip_outside_i64 :: proc(t: ^testing.T) {
+    // Polygon entirely outside the clip rect — should return nothing
+    paths := [][][2]i64{ {{500, 500}, {500, 1000}, {1000, 1000}, {1000, 500}} }
+    rect  := cl.Recti64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 0)
+}
+
+@(test)
+test_rect_clip_entirely_inside_i64 :: proc(t: ^testing.T) {
+    // Polygon entirely inside the clip rect — should pass through unchanged
+    paths := [][][2]i64{ {{-100, -100}, {-100, 100}, {100, 100}, {100, -100}} }
+    rect  := cl.Recti64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 1)
+    if len(solution) > 0 {
+        testing.expect_value(t, len(solution[0]), 4)
+    }
+}
+
+@(test)
+test_rect_clip_lines_i64 :: proc(t: ^testing.T) {
+    // Line crossing through the clip rect — clipped segment should survive
+    paths := [][][2]i64{ {{-500, 0}, {500, 0}} }
+    rect  := cl.Recti64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip_lines(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 1)
+    if len(solution) > 0 {
+        testing.expect_value(t, len(solution[0]), 2)
+    }
+}
+
+@(test)
+test_rect_clip_lines_f64 :: proc(t: ^testing.T) {
+    paths := [][][2]f64{ {{-500, 0}, {500, 0}} }
+    rect  := cl.Rectf64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip_lines(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 1)
+    if len(solution) > 0 {
+        testing.expect_value(t, len(solution[0]), 2)
+    }
+}
+
+@(test)
+test_rect_clip_lines_outside_i64 :: proc(t: ^testing.T) {
+    // Line entirely outside the clip rect — should return nothing
+    paths := [][][2]i64{ {{500, 500}, {1000, 500}} }
+    rect  := cl.Recti64{ min = {-250, -250}, max = {250, 250} }
+
+    solution := cl.rect_clip_lines(rect, paths)
+    defer {
+        for path in solution { delete(path) }
+        delete(solution)
+    }
+
+    testing.expect_value(t, len(solution), 0)
 }
 
 @(test)

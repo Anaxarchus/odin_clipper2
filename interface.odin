@@ -260,25 +260,25 @@ boolean_op_f64 :: proc(
     return unmarshal_pathsd(solution, allocator)
 }
 
-rect_clip_i64 :: proc(rect: Recti64, paths: [][][2]f64, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+rect_clip_i64 :: proc(rect: Recti64, paths: [][][2]i64, allocator: runtime.Allocator = context.allocator) -> [][][2]i64 {
     crect := crect_i64(rect.min, rect.max)
 
-    cpaths := marshal_pathsD(paths)
+    cpaths := marshal_paths64(paths)
     defer delete(cpaths)
 
-    result := RectClip64(crect, cpaths)
-    defer DisposeArrayD(&result)
+    result := RectClip64(&crect, &cpaths[0])
+    defer DisposeArray64(&result)
 
-    return unmarshal_pathsd(result, allocator)
+    return unmarshal_paths64(result, allocator)
 }
 
 rect_clip_f64 :: proc(rect: Rectf64, paths: [][][2]f64, precision: i32 = DEFAULT_PRECISION, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
     crect := crect_f64(rect.min, rect.max)
 
-    cpaths := marshal_pathsD(paths)
+    cpaths := marshal_pathsd(paths)
     defer delete(cpaths)
 
-    result := RectClipD(crect, cpaths)
+    result := RectClipD(&crect, &cpaths[0], precision)
     defer DisposeArrayD(&result)
 
     return unmarshal_pathsd(result, allocator)
@@ -286,29 +286,29 @@ rect_clip_f64 :: proc(rect: Rectf64, paths: [][][2]f64, precision: i32 = DEFAULT
 
 rect_clip :: proc {rect_clip_i64, rect_clip_f64}
 
-rect_clip_lines_i64 :: proc(rect: Recti64, paths: [][][2]f64, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+rect_clip_lines_i64 :: proc(rect: Recti64, paths: [][][2]i64, allocator: runtime.Allocator = context.allocator) -> [][][2]i64 {
     crect := crect_i64(rect.min, rect.max)
 
-    cpaths := marshal_pathsD(paths)
+    cpaths := marshal_paths64(paths)
     defer delete(cpaths)
 
-    result := RectClipLines64(crect, cpaths)
-    defer DisposeArrayD(&result)
+    result := RectClipLines64(&crect, &cpaths[0])
+    defer DisposeArray64(&result)
 
-    return unmarshal_pathsd(result, allocator)
+    return unmarshal_paths64(result, allocator)
 }
 
 rect_clip_lines_f64 :: proc(rect: Rectf64, paths: [][][2]f64, precision: i32 = DEFAULT_PRECISION, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
 
     crect := crect_f64(rect.min, rect.max)
 
-    cpaths := marshal_pathsD(paths)
+    cpaths := marshal_pathsd(paths)
     defer delete(cpaths)
 
-    result := RectClipLinesD(crect, cpaths)
+    result := RectClipLinesD(&crect, &cpaths[0], precision)
     defer DisposeArrayD(&result)
 
     return unmarshal_pathsd(result, allocator)
 }
 
-rect_clip_lines :: proc {rect_clip_lines_f64, rect_clip_lines_f64}
+rect_clip_lines :: proc {rect_clip_lines_i64, rect_clip_lines_f64}
