@@ -15,6 +15,11 @@ import "core:fmt"
 //     children: []PolyPathD,
 // }
 
+Rectf64 :: struct {min, max: [2]f64}
+Rectf32 :: struct {min, max: [2]f32}
+Recti64 :: struct {min, max: [2]i64}
+Recti32 :: struct {min, max: [2]i32}
+
 DEFAULT_PRECISION :: 5
 DEFAULT_ARC_TOLERANCE :: 0.25
 DEFAULT_MITER_LIMIT :: 2
@@ -254,3 +259,56 @@ boolean_op_f64 :: proc(
     if result != 0 do return {}
     return unmarshal_pathsd(solution, allocator)
 }
+
+rect_clip_i64 :: proc(rect: Recti64, paths: [][][2]f64, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+    crect := crect_i64(rect.min, rect.max)
+
+    cpaths := marshal_pathsD(paths)
+    defer delete(cpaths)
+
+    result := RectClip64(crect, cpaths)
+    defer DisposeArrayD(&result)
+
+    return unmarshal_pathsd(result, allocator)
+}
+
+rect_clip_f64 :: proc(rect: Rectf64, paths: [][][2]f64, precision: i32 = DEFAULT_PRECISION, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+    crect := crect_f64(rect.min, rect.max)
+
+    cpaths := marshal_pathsD(paths)
+    defer delete(cpaths)
+
+    result := RectClipD(crect, cpaths)
+    defer DisposeArrayD(&result)
+
+    return unmarshal_pathsd(result, allocator)
+}
+
+rect_clip :: proc {rect_clip_i64, rect_clip_f64}
+
+rect_clip_lines_i64 :: proc(rect: Recti64, paths: [][][2]f64, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+    crect := crect_i64(rect.min, rect.max)
+
+    cpaths := marshal_pathsD(paths)
+    defer delete(cpaths)
+
+    result := RectClipLines64(crect, cpaths)
+    defer DisposeArrayD(&result)
+
+    return unmarshal_pathsd(result, allocator)
+}
+
+rect_clip_lines_f64 :: proc(rect: Rectf64, paths: [][][2]f64, precision: i32 = DEFAULT_PRECISION, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
+
+    crect := crect_f64(rect.min, rect.max)
+
+    cpaths := marshal_pathsD(paths)
+    defer delete(cpaths)
+
+    result := RectClipLinesD(crect, cpaths)
+    defer DisposeArrayD(&result)
+
+    return unmarshal_pathsd(result, allocator)
+}
+
+rect_clip_lines :: proc {rect_clip_lines_f64, rect_clip_lines_f64}

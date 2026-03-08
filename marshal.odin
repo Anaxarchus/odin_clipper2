@@ -1,8 +1,22 @@
 package clipper2
 
 import "core:mem"
+import "base:intrinsics"
 
 
+@(private)
+crect_f64 :: proc(min, max: [2]$T) -> CRectf64 {
+    when intrinsics.type_is_float(T) {
+        return {left = f64(min.x), top = f64(min.y), right = f64(max.x), bottom = f64(max.y)}
+    }
+}
+
+@(private)
+crect_i64 :: proc(min, max: [2]$T) -> CRecti64 {
+    when intrinsics.type_is_integer(T) {
+        return {left = i64(min.x), top = i64(min.y), right = i64(max.x), bottom = i64(max.y)}
+    }
+}
 
 // ------------------------------------------------------
 // Single path encoding/decoding

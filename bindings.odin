@@ -140,10 +140,12 @@ FillRule :: enum { EvenOdd, NonZero, Positive, Negative }
 PathType ::	enum { Subject, Clip }
 JoinWith ::	enum { NoJoin, Left, Right }
 
-Recti64 :: struct {
+@(private)
+CRecti64 :: struct {
     left, top, right, bottom: i64,
 }
-Rectf64 :: struct {
+@(private)
+CRectf64 :: struct {
     left, top, right, bottom: f64,
 }
 
@@ -268,16 +270,16 @@ foreign lib {
     ) -> CPathsD ---
 
     @(private="package")
-    RectClip64 :: proc(rect: Recti64, paths: CPaths64) -> CPaths64 ---
+    RectClip64 :: proc(rect: CRecti64, paths: CPaths64) -> CPaths64 ---
 
     @(private="package")
-    RectClipD :: proc(rect: Rectf64, paths: CPathsD, precision: i32) -> CPathsD ---
+    RectClipD :: proc(rect: CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
 
     @(private="package")
-    RectClipLines64 :: proc(rect: Recti64, paths: CPaths64) -> CPaths64 ---
+    RectClipLines64 :: proc(rect: CRecti64, paths: CPaths64) -> CPaths64 ---
 
     @(private="package")
-    RectClipLinesD :: proc(rect: Rectf64, paths: CPathsD, precision: i32) -> CPathsD ---
+    RectClipLinesD :: proc(rect: CRectf64, paths: CPathsD, precision: i32) -> CPathsD ---
 
     @(private="package")
     Triangulate64 :: proc( paths: CPaths64, use_delaunay: bool) -> CPaths64 ---
