@@ -35,14 +35,14 @@ marshal_path64 :: proc(slice: [][2]i64) -> []i64 {
 }
 
 @(private="package")
-unmarshal_path64 :: proc(path: CPath64) -> [][2]i64 {
+unmarshal_path64 :: proc(path: CPath64, allocator: runtime.Allocator = context.allocator) -> [][2]i64 {
     if path == nil {
         return {}
     }
 
     length := int(path^)                 // number of points
     slice := mem.slice_ptr(path, length*2 + 2)
-    result := make([][2]i64, length)
+    result := make([][2]i64, length, allocator)
 
     for i in 0..<length {
         result[i] = {slice[i*2 + 2], slice[i*2 + 3]}
@@ -66,13 +66,13 @@ marshal_pathd :: proc(slice: [][2]f64) -> []f64 {
 
 // Encode a float64 slice into a length-prefixed array
 @(private="package")
-unmarshal_pathd :: proc(path: CPathD) -> [][2]f64 {
+unmarshal_pathd :: proc(path: CPathD, allocator: runtime.Allocator = context.allocator) -> [][2]f64 {
     if path == nil {
         return {}
     }
     length := int(path^)   // first element is length
     slice := mem.slice_ptr(path, length+2)
-    result := make([][2]f64, len(slice)-2)
+    result := make([][2]f64, len(slice)-2, allocator)
     for i in 0..<len(slice)-2 {
         result[i] = {slice[2+i], slice[3+i]}
     }
@@ -126,7 +126,7 @@ marshal_paths64 :: proc(polygons: [][][2]i64) -> []i64 {
 }
 
 @(private="package")
-unmarshal_paths64 :: proc(paths: CPaths64) -> [][][2]i64 {
+unmarshal_paths64 :: proc(paths: CPaths64, allocator: runtime.Allocator = context.allocator) -> [][][2]i64 {
     if paths == nil {
         return {}
     }
@@ -138,13 +138,13 @@ unmarshal_paths64 :: proc(paths: CPaths64) -> [][][2]i64 {
     path_count := int(memory[cur])
     cur += 1
 
-    result := make([][][2]i64, path_count)
+    result := make([][][2]i64, path_count, allocator)
 
     for i in 0..<path_count {
         poly_len := int(memory[cur])
         cur += 2 // skip length + reserved
 
-        poly := make([][2]i64, poly_len)
+        poly := make([][2]i64, poly_len, allocator)
         for j in 0..<poly_len {
             poly[j].x = memory[cur]
             poly[j].y = memory[cur+1]
@@ -183,7 +183,7 @@ marshal_pathsd :: proc(polygons: [][][2]f64) -> []f64 {
 }
 
 @(private="package")
-unmarshal_pathsd :: proc(paths: CPathsD) -> [][][2]f64 {
+unmarshal_pathsd :: proc(paths: CPathsD, allocator: runtime.Allocator = context.allocator) -> [][][2]f64 {
     if paths == nil {
         return {}
     }
@@ -194,13 +194,13 @@ unmarshal_pathsd :: proc(paths: CPathsD) -> [][][2]f64 {
     path_count := int(memory[cur])      // umber of paths
     cur += 1
 
-    result := make([][][2]f64, path_count)
+    result := make([][][2]f64, path_count, allocator)
 
     for i in 0..<path_count {
         length = int(memory[cur])        // length of this path (in pairs)
         cur += 2                         // skip header pair
 
-        result[i] = make([][2]f64, length)
+        result[i] = make([][2]f64, length, allocator)
         for j in 0..<length {
             result[i][j].x = memory[cur]
             cur += 1

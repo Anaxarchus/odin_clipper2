@@ -1,5 +1,6 @@
 package clipper2
 
+import "base:runtime"
 import "core:fmt"
 
 // // PolyPaths are not yet supported
@@ -18,7 +19,17 @@ DEFAULT_PRECISION :: 5
 DEFAULT_ARC_TOLERANCE :: 0.25
 DEFAULT_MITER_LIMIT :: 2
 
-offset_polygon_f64 :: proc(polygon: [][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]f64 {
+offset_polygon_f64 :: proc(
+    polygon: [][2]f64,
+    delta: f64,
+    join_type: JoinType,
+    end_type: EndType,
+    miter_limit: f64 = DEFAULT_MITER_LIMIT,
+    arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE,
+    reverse_solution: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]f64
+{
 
 	encoded: []f64 = marshal_pathd(polygon)
 	defer delete(encoded)
@@ -26,10 +37,20 @@ offset_polygon_f64 :: proc(polygon: [][2]f64, delta: f64, join_type: JoinType, e
     offset_paths := InflatePathD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArrayD(&offset_paths)
 
-	return unmarshal_pathsd(offset_paths)
+	return unmarshal_pathsd(offset_paths, allocator)
 }
 
-offset_polygons_f64 :: proc(polygons: [][][2]f64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]f64 {
+offset_polygons_f64 :: proc(
+    polygons: [][][2]f64,
+    delta: f64,
+    join_type: JoinType,
+    end_type: EndType,
+    miter_limit: f64 = DEFAULT_MITER_LIMIT,
+    arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE,
+    reverse_solution: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]f64
+{
 
 	encoded: []f64 = marshal_pathsd(polygons)
 	defer delete(encoded)
@@ -37,10 +58,20 @@ offset_polygons_f64 :: proc(polygons: [][][2]f64, delta: f64, join_type: JoinTyp
     offset_paths := InflatePathsD(&encoded[0], delta, join_type, end_type, DEFAULT_PRECISION, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArrayD(&offset_paths)
 
-	return unmarshal_pathsd(offset_paths)
+	return unmarshal_pathsd(offset_paths, allocator)
 }
 
-offset_polygon_i64 :: proc(polygon: [][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]i64 {
+offset_polygon_i64 :: proc(
+    polygon: [][2]i64,
+    delta: f64,
+    join_type: JoinType,
+    end_type: EndType,
+    miter_limit: f64 = DEFAULT_MITER_LIMIT,
+    arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE,
+    reverse_solution: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64
+{
 
 	encoded: []i64 = marshal_path64(polygon)
 	defer delete(encoded)
@@ -48,10 +79,19 @@ offset_polygon_i64 :: proc(polygon: [][2]i64, delta: f64, join_type: JoinType, e
     offset_paths := InflatePath64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArray64(&offset_paths)
 
-	return unmarshal_paths64(offset_paths)
+	return unmarshal_paths64(offset_paths, allocator)
 }
 
-offset_polygons_i64 :: proc(polygons: [][][2]i64, delta: f64, join_type: JoinType, end_type: EndType, miter_limit: f64 = DEFAULT_MITER_LIMIT, arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE, reverse_solution: bool = false) -> [][][2]i64 {
+offset_polygons_i64 :: proc(
+    polygons: [][][2]i64,
+    delta: f64,
+    join_type: JoinType,
+    end_type: EndType,
+    miter_limit: f64 = DEFAULT_MITER_LIMIT,
+    arc_tolerance: f64 = DEFAULT_ARC_TOLERANCE,
+    reverse_solution: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64 {
 
 	encoded: []i64 = marshal_paths64(polygons)
 	defer delete(encoded)
@@ -59,34 +99,50 @@ offset_polygons_i64 :: proc(polygons: [][][2]i64, delta: f64, join_type: JoinTyp
     offset_paths := InflatePaths64(&encoded[0], delta, join_type, end_type, miter_limit, arc_tolerance, reverse_solution)
 	defer DisposeArray64(&offset_paths)
 
-	return unmarshal_paths64(offset_paths)
+	return unmarshal_paths64(offset_paths, allocator)
 }
 
 offset :: proc {offset_polygon_f64, offset_polygon_i64, offset_polygons_f64, offset_polygons_i64}
 
-triangulate_polygons_f64 :: proc(polygons: [][][2]f64, use_delaunay: bool = false) -> [][][2]f64 {
+triangulate_polygons_f64 :: proc(
+    polygons: [][][2]f64,
+    use_delaunay: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]f64 
+{
     encoded: []f64 = marshal_pathsd(polygons)
     defer delete(encoded)
 
     triangulated := TriangulateD(&encoded[0], DEFAULT_PRECISION, use_delaunay)
     defer DisposeArrayD(&triangulated)
 
-    return unmarshal_pathsd(triangulated)
+    return unmarshal_pathsd(triangulated, allocator)
 }
 
-triangulate_polygons_i64 :: proc(polygons: [][][2]i64, use_delaunay: bool = false) -> [][][2]i64 {
+triangulate_polygons_i64 :: proc(
+    polygons: [][][2]i64,
+    use_delaunay: bool = false,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64
+{
     encoded: []i64 = marshal_paths64(polygons)
     defer delete(encoded)
 
     triangulated := Triangulate64(&encoded[0], use_delaunay)
     defer DisposeArray64(&triangulated)
 
-    return unmarshal_paths64(triangulated)
+    return unmarshal_paths64(triangulated, allocator)
 }
 
 triangulate :: proc {triangulate_polygons_f64, triangulate_polygons_i64}
 
-minkowski_sum :: proc(pattern: [][2]i64, path: [][2]i64, is_closed: bool) -> [][][2]i64 {
+minkowski_sum :: proc(
+    pattern: [][2]i64,
+    path: [][2]i64,
+    is_closed: bool,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64
+{
     encoded_pattern: []i64 = marshal_path64(pattern)
 	defer delete(encoded_pattern)
 
@@ -99,10 +155,16 @@ minkowski_sum :: proc(pattern: [][2]i64, path: [][2]i64, is_closed: bool) -> [][
     sum := MinkowskiSum64(&encoded_pattern_ptr, &encoded_path_ptr, is_closed)
     defer DisposeArray64(&sum)
 
-	return unmarshal_paths64(sum)
+	return unmarshal_paths64(sum, allocator)
 }
 
-minkowski_difference :: proc(pattern: [][2]i64, path: [][2]i64, is_closed: bool) -> [][][2]i64 {
+minkowski_difference :: proc(
+    pattern: [][2]i64,
+    path: [][2]i64,
+    is_closed: bool,
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64
+{
     encoded_pattern: []i64 = marshal_path64(pattern)
 	defer delete(encoded_pattern)
 
@@ -115,7 +177,7 @@ minkowski_difference :: proc(pattern: [][2]i64, path: [][2]i64, is_closed: bool)
     diff := MinkowskiDiff64(&encoded_pattern_ptr, &encoded_path_ptr, is_closed)
     defer DisposeArray64(&diff)
 
-	return unmarshal_paths64(diff)
+	return unmarshal_paths64(diff, allocator)
 }
 
 boolean_op_i64 :: proc(
@@ -125,7 +187,9 @@ boolean_op_i64 :: proc(
     clips: [][][2]i64,
     preserve_collinear: bool = true,
     reverse_solution: bool = false,
-) -> [][][2]i64 {
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]i64
+{
     encoded_subjects := marshal_paths64(subjects)
     defer delete(encoded_subjects)
     encoded_clips := marshal_paths64(clips)
@@ -150,7 +214,7 @@ boolean_op_i64 :: proc(
     defer DisposeArray64(&solution_open)
 
     if result != 0 do return {}
-    return unmarshal_paths64(solution)
+    return unmarshal_paths64(solution, allocator)
 }
 
 boolean_op_f64 :: proc(
@@ -160,7 +224,9 @@ boolean_op_f64 :: proc(
     clips: [][][2]f64,
     preserve_collinear: bool = true,
     reverse_solution: bool = false,
-) -> [][][2]f64 {
+    allocator: runtime.Allocator = context.allocator,
+) -> [][][2]f64
+{
     encoded_subjects := marshal_pathsd(subjects)
     defer delete(encoded_subjects)
     encoded_clips := marshal_pathsd(clips)
@@ -186,5 +252,5 @@ boolean_op_f64 :: proc(
     defer DisposeArrayD(&solution_open)
 
     if result != 0 do return {}
-    return unmarshal_pathsd(solution)
+    return unmarshal_pathsd(solution, allocator)
 }
