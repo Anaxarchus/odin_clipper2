@@ -103,6 +103,7 @@ the four vertices that define the two segments that are intersecting.
 
 */
 
+CLIPPER2_WASM_LIB :: #config(CLIPPER2_WASM_LIB, "bin/Web/libClipper2.a")
 when ODIN_OS == .Windows {
 	foreign import lib {
         "bin/Windows/libClipper2.lib",
@@ -120,7 +121,7 @@ when ODIN_OS == .Windows {
 	}
 } else when ODIN_OS == .JS {
 	foreign import lib {
-        "bin/Web/libClipper2.a",
+        CLIPPER2_WASM_LIB,
 	}
 }
 
